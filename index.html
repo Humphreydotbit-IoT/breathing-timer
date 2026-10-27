@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; manifest-src 'self'; worker-src 'self'">
+  <title>Breathing Timer</title>
+  <meta name="description" content="Offline breathing exercise timer">
+  <meta name="theme-color" content="#12343b" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#e8f4f1" media="(prefers-color-scheme: light)">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="wrap">
+  <header class="top">
+    <h1>Breathing Timer <span class="my" lang="my">အသက်ရှူ လေ့ကျင့်ခန်း</span></h1>
+  </header>
+
+  <p class="safety" role="note">
+    <strong>⚠</strong>
+    If you feel dizzy or chest tightness, stop and breathe normally. Persistent symptoms: see a doctor.
+    <span class="my" lang="my">မူးဝေခြင်း သို့မဟုတ် ရင်ကျပ်ခြင်း ဖြစ်ပါက ရပ်ပြီး ပုံမှန်အတိုင်း အသက်ရှူပါ။ လက္ခဏာများ ဆက်ရှိနေပါက ဆရာဝန်နှင့် ပြသပါ။</span>
+  </p>
+
+  <div class="layout">
+    <section class="card timer-card" aria-labelledby="ex-heading">
+      <h2 id="ex-heading" class="sr-only">Exercise</h2>
+
+      <fieldset class="setup" id="setup">
+        <legend class="sr-only">Choose exercise and length</legend>
+        <div class="seg" role="radiogroup" aria-label="Exercise">
+          <label class="opt">
+            <input type="radio" name="exercise" value="belly" checked>
+            <span>Belly breathing<small lang="my">ဝမ်းဗိုက်ဖြင့် အသက်ရှူခြင်း</small><small>In 4 s nose · Out 6 s mouth</small></span>
+          </label>
+          <label class="opt">
+            <input type="radio" name="exercise" value="pursed">
+            <span>Pursed-lip breathing<small lang="my">နှုတ်ခမ်းစု၍ အသက်ရှူခြင်း</small><small>In 2 s nose · Out 4 s pursed lips</small></span>
+          </label>
+        </div>
+        <div class="seg small" role="radiogroup" aria-label="Session length" id="durations"></div>
+      </fieldset>
+
+      <div class="stage">
+        <div class="circle-wrap" aria-hidden="true">
+          <div class="guide"></div>
+          <div class="circle" id="circle"></div>
+          <div class="ring" id="ring"></div>
+        </div>
+        <div class="readout" aria-live="polite" aria-atomic="true">
+          <div class="phase" id="phase">Ready <span lang="my">အဆင်သင့်</span></div>
+          <div class="count" id="count" aria-label="Seconds left in this phase">–</div>
+        </div>
+      </div>
+
+      <div class="hint" id="hint" aria-live="polite">&nbsp;</div>
+      <div class="remaining">Remaining <span lang="my">ကျန်ချိန်</span>: <output id="remaining">0:00</output></div>
+
+      <div class="controls">
+        <button id="btnStart" class="btn primary" type="button" aria-label="Start session">Start <span lang="my">စတင်</span></button>
+        <button id="btnPause" class="btn" type="button" aria-label="Pause session" hidden>Pause <span lang="my">ခဏရပ်</span></button>
+        <button id="btnResume" class="btn primary" type="button" aria-label="Resume session" hidden>Resume <span lang="my">ဆက်လုပ်</span></button>
+        <button id="btnStop" class="btn danger" type="button" aria-label="Stop session" hidden>Stop <span lang="my">ရပ်</span></button>
+      </div>
+
+      <div class="toggles">
+        <label class="switch"><input type="checkbox" id="optBeep" checked> <span>Soft beep <span lang="my">အသံ</span></span></label>
+        <label class="switch" id="vibWrap"><input type="checkbox" id="optVib"> <span>Vibration <span lang="my">တုန်ခါမှု</span></span></label>
+      </div>
+      <p class="status" id="status" aria-live="polite"></p>
+    </section>
+
+    <section class="card" aria-labelledby="today-heading">
+      <h2 id="today-heading">Today <span lang="my">ယနေ့</span></h2>
+      <div class="stats">
+        <div class="stat"><div class="big" id="todayCount">0/3</div><div>completed <span lang="my">ပြီးဆုံး</span></div></div>
+        <div class="stat"><div class="big" id="streak">0</div><div>day streak <span lang="my">ဆက်တိုက်ရက်</span></div></div>
+      </div>
+      <ul class="slots" id="slots" aria-label="Today's slots"></ul>
+
+      <div class="hist-head">
+        <h2 id="hist-heading">History <span lang="my">မှတ်တမ်း</span></h2>
+        <button id="btnExport" class="btn small" type="button" aria-label="Export history as CSV file">Export CSV</button>
+      </div>
+      <ul class="history" id="history" aria-labelledby="hist-heading"></ul>
+      <p class="muted" id="histEmpty">No sessions yet. <span lang="my">မှတ်တမ်း မရှိသေးပါ။</span></p>
+      <p class="muted tiny">All data stays on this device (localStorage). <span lang="my">ဒေတာများ ဤစက်ပေါ်တွင်သာ ရှိသည်။</span></p>
+    </section>
+  </div>
+</main>
+
+<dialog id="logDialog" aria-labelledby="logTitle">
+  <form method="dialog" id="logForm">
+    <h2 id="logTitle">How do you feel? <span lang="my">ဘယ်လိုခံစားရလဲ</span></h2>
+    <p class="muted" id="logSummary"></p>
+    <div class="chips" role="radiogroup" aria-label="Feeling">
+      <label class="chip"><input type="radio" name="feeling" value="better"><span>Better <span lang="my">ပိုကောင်း</span></span></label>
+      <label class="chip"><input type="radio" name="feeling" value="same"><span>Same <span lang="my">အတူတူ</span></span></label>
+      <label class="chip"><input type="radio" name="feeling" value="worse"><span>Worse <span lang="my">ပိုဆိုး</span></span></label>
+      <label class="chip"><input type="radio" name="feeling" value="dizzy"><span>Dizzy <span lang="my">မူးဝေ</span></span></label>
+    </div>
+    <label class="note-label" for="logNote">Note (optional) <span lang="my">မှတ်ချက်</span></label>
+    <textarea id="logNote" rows="3" maxlength="500"></textarea>
+    <p class="dizzy-warn" id="dizzyWarn" hidden>Rest and breathe normally. If dizziness or chest tightness persists, see a doctor.</p>
+    <div class="controls">
+      <button class="btn" value="discard" type="submit" id="btnDiscard" aria-label="Discard without saving">Don't save <span lang="my">မသိမ်းပါ</span></button>
+      <button class="btn primary" value="save" type="submit" id="btnSave" aria-label="Save log entry">Save <span lang="my">သိမ်းမည်</span></button>
+    </div>
+  </form>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>
